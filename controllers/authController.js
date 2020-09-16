@@ -10,7 +10,7 @@ exports.signUp = async (req, res, next) => {
   try {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-      console.log(errors.errors);
+      // console.log(errors.errors);
       const error = new Error(`${errors.array()[0].param}:  ${errors.array()[0].msg}`);
       error.message = errors.errors[0].msg;
       error.statusCode = 422;
@@ -37,7 +37,7 @@ exports.signUp = async (req, res, next) => {
     console.log(hashedEmailVerificationCode);
     user.emailVerificationCode = hashedEmailVerificationCode;
     await user.save();
-    const verifyEmailLink = `${process.env.URL}/auth/verityEmail?verifyCode=${hashedEmailVerificationCode}`
+    const verifyEmailLink = `${process.env.CLIENTSITE_URL}/verityEmail/${hashedEmailVerificationCode}`
     sendMail(
        email,
       'yanhongmain@gmail.com',
@@ -100,11 +100,33 @@ exports.login = async (req, res, next) => {
 
 exports.verityEmail = async (req, res, next) => {
   try {
-    const hashedEmailVerificationCode = req.query.verifyCode;
-    const decodedVerifycationCode = jwt.verify(hashedEmailVerificationCode.replace(/\\n/gm, '\n'), 
-      process.env.EMAIL_VERIFICATION_PRIVATE_KEY );
-    console.log(verifyCode);
-    console.log(decodedVerifycationCode);
+    const hashedEmailVerificationCode = req.body.emailVerificationCode;
+    let decodedVerifycationCode;
+    try {
+      // decodedToken = jwt.verify(token, process.env.WEB_TOKEN_PRIVATE_KEY.replace(/\\n/gm, '\n'));
+      decodedVerifycationCode = jwt.verify(hashedEmailVerificationCode, process.env.EMAIL_VERIFICATION_PRIVATE_KEY.replace(/\\n/gm, '\n'));
+    } catch (err) {
+      const error = new Error('invalid verifycation code.');
+      error.statusCode = 500;
+      throw error;
+    }
+    if (!decodedVerifycationCode) {
+      res.status(401).json({ message: "invalid verifycation code."} );
+    }else{
+      // console.log(decodedVerifycationCode);
+      const userId = decodedVerifycationCode.userId;
+      const email = decodedVerifycationCode.email;
+      const user = await User.findById(userId);
+      if(user && user.email === email){
+        if(!user.emailVerified){
+          user.emailVerified = true;
+          await user.save();
+        }
+        res.status(200).json({ userId: user._id.toString()} );
+      }else{
+        res.status(401).json({ message: "invalid verifycation code."} );
+      }
+    }
   } catch (err) {
     if (!err.statusCode) {
       err.statusCode = 500;

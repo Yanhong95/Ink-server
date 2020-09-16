@@ -31,6 +31,6 @@ router.post(
 );
 
 router.post('/login', authController.login);
-router.get('/verityEmail', authController.verityEmail);
+router.post('/verityEmail', authController.verityEmail);
 
 module.exports = router;
