@@ -18,7 +18,7 @@ router.post(
         const email = value.trim().toLowerCase();
         return User.findOne({ email }).then(userDoc => {
           if (userDoc) {
-            return Promise.reject('E-Mail address already exists!');
+            return Promise.reject('Email address already exists!');
           }
         });
       })

@@ -68,8 +68,14 @@ exports.login = async (req, res, next) => {
     const match = await bcrypt.compare(password, user.password);
     if (match) {
       if (!user.emailVerified) {
-        //...todo
-        // send verify link
+        console.log('right here');
+        const verifyEmailLink = `${process.env.CLIENTSITE_URL}/verityEmail/${user.emailVerificationCode}`
+        sendMail(
+          email,
+         'yanhongmain@gmail.com',
+         'Activate your email for INK!',
+         `<h5>Hello ${User.firstName}, thanks for sign up on my website, please click <a href=${verifyEmailLink}>here</a> to verify your email, have a nice day :) </h5>`
+        );
         const error = new Error('Your email address is not verified, we just sent a link to your email, please click on the link to verify.');
         error.statusCode = 401;
         throw error;
@@ -100,18 +106,19 @@ exports.login = async (req, res, next) => {
 
 exports.verityEmail = async (req, res, next) => {
   try {
+    console.log(1);
     const hashedEmailVerificationCode = req.body.emailVerificationCode;
     let decodedVerifycationCode;
     try {
       // decodedToken = jwt.verify(token, process.env.WEB_TOKEN_PRIVATE_KEY.replace(/\\n/gm, '\n'));
       decodedVerifycationCode = jwt.verify(hashedEmailVerificationCode, process.env.EMAIL_VERIFICATION_PRIVATE_KEY.replace(/\\n/gm, '\n'));
     } catch (err) {
-      const error = new Error('invalid verifycation code.');
+      const error = new Error('Invalid verifycation code.');
       error.statusCode = 500;
       throw error;
     }
     if (!decodedVerifycationCode) {
-      res.status(401).json({ message: "invalid verifycation code."} );
+      res.status(401).json({ message: "Invalid verifycation code."} );
     }else{
       // console.log(decodedVerifycationCode);
       const userId = decodedVerifycationCode.userId;
@@ -124,7 +131,7 @@ exports.verityEmail = async (req, res, next) => {
         }
         res.status(200).json({ userId: user._id.toString()} );
       }else{
-        res.status(401).json({ message: "invalid verifycation code."} );
+        res.status(401).json({ message: "Invalid verifycation code."} );
       }
     }
   } catch (err) {
