@@ -88,7 +88,9 @@ exports.login = async (req, res, next) => {
           process.env.WEB_TOKEN_PRIVATE_KEY.replace(/\\n/gm, '\n'),
           { expiresIn: '1h' }
         );
-        res.status(200).json({ idToken: token, userId: loadedUser._id.toString(), expiresIn: 1 * 60 * 60 });
+        const isAdmin = user.role.includes("admin") ? true : false;
+        console.log(isAdmin);
+        res.status(200).json({ idToken: token, userId: loadedUser._id.toString(), isAdmin, expiresIn: 1 * 60 * 60 });
       }
     } else {
       const error = new Error('Wrong password!');
