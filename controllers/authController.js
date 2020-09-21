@@ -108,7 +108,6 @@ exports.login = async (req, res, next) => {
 
 exports.verityEmail = async (req, res, next) => {
   try {
-    console.log(1);
     const hashedEmailVerificationCode = req.body.emailVerificationCode;
     let decodedVerifycationCode;
     try {
