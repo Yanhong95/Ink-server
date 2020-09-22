@@ -9,7 +9,13 @@ const noteSchema = new Schema({
   url: {
     type: String,
     required: true  
-  }
+  },
+  comments:[
+    {
+      type: Schema.Types.ObjectId,
+      ref: 'comment'
+    }
+  ]
 });
 
 module.exports = mongoose.model('Note', noteSchema);

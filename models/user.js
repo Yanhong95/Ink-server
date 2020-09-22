@@ -28,7 +28,13 @@ const userSchema = new Schema({
   emailVerificationCode: {
     type: String,
   },
-  role: [String]
+  role: [String],
+  likedNotes: [
+    {
+      type: Schema.Types.ObjectId,
+      ref: 'note'
+    }
+  ]
 });
 
 module.exports = mongoose.model('user', userSchema);
