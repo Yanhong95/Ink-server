@@ -3,7 +3,7 @@ const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 const authRoute = require('./routes/authRoute');
 const noteRoute = require('./routes/noteRoute');
-const updateRoute = require('./routes/updateRoute');
+const S3Route = require('./routes/S3Route');
 const app = express();
 
 const result = require('dotenv').config()
@@ -30,7 +30,7 @@ app.use((req, res, next) => {
 
 app.use('/auth', authRoute);
 app.use('/note', noteRoute);
-app.use('/update',updateRoute);
+app.use('/s3', S3Route)
 
 app.use((error, req, res, next) => {
   console.log(error);
