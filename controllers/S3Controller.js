@@ -2,6 +2,7 @@ const AWS = require('aws-sdk');
 const path = require('path');
 const fs = require('fs');
 const mime = require('mime-types');
+const Note = require('../models/note');
 
 const result = require('dotenv').config()
  
@@ -43,31 +44,34 @@ exports.getS3SignedUrl = (req, res, next) => {
   }
 };
 
-exports.getS3Object = async (req, res, next) => {
-  if (!req.isAuth) {
-    const error = new Error('Not authenticated!');
-    error.code = 401;
-    throw error;
-  }
+exports.getS3Note = async (req, res, next) => {
+  // if (!req.isAuth) {
+  //   const error = new Error('Not authenticated!');
+  //   error.code = 401;
+  //   throw error;
+  // }
   try {
-    const post = await Post.findById(req.query.postId);
-    if (!post) {
+    console.log(req.body.noteId);
+    const note = await Note.findById(req.body.noteId);
+    if (!note) {
       const error = new Error('No post found!');
       error.code = 404;
       throw error;
     }
-    const imageUrl = post.imageUrl;
-    const imageName = imageUrl.split("/").pop();
+    const URL = note.url;
+    const Name = note.name;
+    console.log(note.url.split("mypersonalblogstore/")[1]);
     const params = {
-      Bucket: "restpostproject", 
-      Key: `postImage/${imageName}`
+      Bucket: "mypersonalblogstore", 
+      Key: note.url.split("mypersonalblogstore/")[1]
+      // notes/algorithm/Array/5f6961668bfd50a1780a66eb-18. 4Sum.md
      };
      data = await s3.getObject(params).promise();
-     let tempPath = path.join(__dirname, '../images', imageName);
+     let tempPath = path.join(__dirname, '../download', note.name.replace(/\s+/g, '_').toLowerCase());
      fs.writeFileSync(tempPath, data.Body);
      res.setHeader('Content-Length', data.ContentLength);
-     res.setHeader('Content-Type', mime.contentType(imageName));
-     res.setHeader('Content-Disposition', 'attachment; filename="' + imageName + '"');
+     res.setHeader('Content-Type', mime.contentType(note.name));
+     res.setHeader('Content-Disposition', 'attachment; filename="' + note.name.replace(/\s+/g, '_').toLowerCase() + '"');
      var filestream = fs.createReadStream(tempPath);
      filestream.pipe(res);
      fs.unlinkSync(tempPath);
@@ -78,6 +82,37 @@ exports.getS3Object = async (req, res, next) => {
     next(err);
   }
 }
+
+exports.getS3Resume = async (req, res, next) => {
+  try {
+    const params = {
+      Bucket: "mypersonalblogstore", 
+      Key: 'users/main/Resume_Full_Stack.pdf'
+     };
+     data = await s3.getObject(params).promise();
+     let tempPath = path.join(__dirname, '../download', 'Resume_Full_Stack.pdf');
+     fs.writeFileSync(tempPath, data.Body);
+     res.setHeader('Content-Length', data.ContentLength);
+     res.setHeader('Content-Type', mime.contentType('Resume_Full_Stack.pdf'));
+     res.setHeader('Content-Disposition', 'attachment; filename="Resume_Full_Stack.pdf"');
+     var filestream = fs.createReadStream(tempPath);
+     filestream.pipe(res);
+     fs.unlinkSync(tempPath);
+  } catch (err) {
+    if (!err.statusCode) {
+      err.statusCode = 500;
+    }
+    next(err);
+  }
+}
+
+
+
+
+// const error = new Error('Network error, can\'t load the page!');
+// if (!error.statusCode) {
+//   error.statusCode = 500;
+// }
 
 // exports.deleteImage = async (req, res, next) => {
 //   try {

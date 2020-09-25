@@ -53,7 +53,7 @@ exports.loadTopic = async (req, res, next) => {
       .populate({
         path: 'subcategories', model: 'Subcategory',
         populate: {
-          path: 'notes', model: 'Note'
+          path: 'notes', model: 'Note' , select: ['name','_id']
         }
       });
     res.status(200).json({ message: 'topicFound!', subcategories: result.subcategories });

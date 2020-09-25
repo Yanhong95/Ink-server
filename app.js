@@ -19,7 +19,7 @@ app.use(bodyParser.urlencoded({ extended: true }))
 app.use(bodyParser.json())
 
 app.use((req, res, next) => {
-  // 所有的domain都可以access这个server
+  // 所有的domain都可以access这个server  跨域资源共享（ CORS ）
   res.setHeader('Access-Control-Allow-Origin', '*');
   // 哪些method可以被接受
   res.setHeader('Access-Control-Allow-Methods', 'OPTIONS, GET, POST, PUT, PATCH, DELETE');
