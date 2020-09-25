@@ -3,6 +3,7 @@ const path = require('path');
 const fs = require('fs');
 const mime = require('mime-types');
 const Note = require('../models/note');
+const contentDisposition = require('content-disposition');
 
 const result = require('dotenv').config()
  
@@ -71,7 +72,8 @@ exports.getS3Note = async (req, res, next) => {
      fs.writeFileSync(tempPath, data.Body);
      res.setHeader('Content-Length', data.ContentLength);
      res.setHeader('Content-Type', mime.contentType(note.name));
-     res.setHeader('Content-Disposition', 'attachment; filename="' + note.name.replace(/\s+/g, '_').toLowerCase() + '"');
+     const realName = encodeURI(note.name.replace(/\s+/g, '_').toLowerCase(),"GBK").toString('iso8859-1');
+     res.setHeader('Content-Disposition', 'attachment; filename="' + realName + '"');
      var filestream = fs.createReadStream(tempPath);
      filestream.pipe(res);
      fs.unlinkSync(tempPath);
