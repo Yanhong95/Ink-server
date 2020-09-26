@@ -6,7 +6,7 @@ const Note = require('../models/note');
 const contentDisposition = require('content-disposition');
 
 const result = require('dotenv').config()
- 
+
 if (result.error) {
   throw result.error
 }
@@ -24,7 +24,7 @@ exports.getS3SignedUrl = (req, res, next) => {
       error.code = 401;
       throw error;
     }
-    
+
     const params = {
       Bucket: req.query.uploadS3Bucket,
       Key: `${req.query.uploadPath}/${req.userId}-${req.query.filename}`,
@@ -34,7 +34,7 @@ exports.getS3SignedUrl = (req, res, next) => {
       if (err) {
         console.log('error', err);
       } else {
-        return res.status(200).json({ signedUrl: url, fileName:`${req.userId}-${req.query.filename}`});
+        return res.status(200).json({ signedUrl: url, fileName: `${req.userId}-${req.query.filename}` });
       }
     });
   } catch (err) {
@@ -63,20 +63,20 @@ exports.getS3Note = async (req, res, next) => {
     const Name = note.name;
     console.log(note.url.split("mypersonalblogstore/")[1]);
     const params = {
-      Bucket: "mypersonalblogstore", 
+      Bucket: "mypersonalblogstore",
       Key: note.url.split("mypersonalblogstore/")[1]
       // notes/algorithm/Array/5f6961668bfd50a1780a66eb-18. 4Sum.md
-     };
-     data = await s3.getObject(params).promise();
-     let tempPath = path.join(__dirname, '../download', note.name.replace(/\s+/g, '_').toLowerCase());
-     fs.writeFileSync(tempPath, data.Body);
-     res.setHeader('Content-Length', data.ContentLength);
-     res.setHeader('Content-Type', mime.contentType(note.name));
-     const realName = encodeURI(note.name.replace(/\s+/g, '_').toLowerCase(),"GBK").toString('iso8859-1');
-     res.setHeader('Content-Disposition', 'attachment; filename="' + realName + '"');
-     var filestream = fs.createReadStream(tempPath);
-     filestream.pipe(res);
-     fs.unlinkSync(tempPath);
+    };
+    data = await s3.getObject(params).promise();
+    let tempPath = path.join(__dirname, '../download', note.name.replace(/\s+/g, '_').toLowerCase());
+    fs.writeFileSync(tempPath, data.Body);
+    res.setHeader('Content-Length', data.ContentLength);
+    res.setHeader('Content-Type', mime.contentType(note.name));
+    const realName = encodeURI(note.name.replace(/\s+/g, '_').toLowerCase(), "GBK").toString('iso8859-1');
+    res.setHeader('Content-Disposition', 'attachment; filename="' + realName + '"');
+    var filestream = fs.createReadStream(tempPath);
+    filestream.pipe(res);
+    fs.unlinkSync(tempPath);
   } catch (err) {
     if (!err.statusCode) {
       err.statusCode = 500;
@@ -85,21 +85,37 @@ exports.getS3Note = async (req, res, next) => {
   }
 }
 
+const sleep = ( millisecond, func) => {
+  return new Promise(resolve => {
+    setTimeout(() => {
+        func
+    }, millisecond)
+})
+}
+
 exports.getS3Resume = async (req, res, next) => {
   try {
     const params = {
-      Bucket: "mypersonalblogstore", 
+      Bucket: "mypersonalblogstore",
       Key: 'users/main/Resume_Full_Stack.pdf'
-     };
-     data = await s3.getObject(params).promise();
-     let tempPath = path.join(__dirname, '../download', 'Resume_Full_Stack.pdf');
-     fs.writeFileSync(tempPath, data.Body);
-     res.setHeader('Content-Length', data.ContentLength);
-     res.setHeader('Content-Type', mime.contentType('Resume_Full_Stack.pdf'));
-     res.setHeader('Content-Disposition', 'attachment; filename="Resume_Full_Stack.pdf"');
-     var filestream = fs.createReadStream(tempPath);
-     filestream.pipe(res);
-     fs.unlinkSync(tempPath);
+    };
+    data = await s3.getObject(params).promise();
+    let tempPath = path.join(__dirname, '../download', 'Resume_Full_Stack.pdf');
+    fs.writeFileSync(tempPath, data.Body);
+    res.setHeader('Content-Length', data.ContentLength);
+    res.setHeader('Content-Type', mime.contentType('Resume_Full_Stack.pdf'));
+    res.setHeader('Content-Disposition', 'attachment; filename="Resume_Full_Stack.pdf"');
+    var filestream = fs.createReadStream(tempPath);
+    filestream.pipe(res);
+    filestream.on('error', (err) => {
+      console.log('Error in read stream...' + err);
+    });
+    res.on('error', (err) => {
+      console.log('Error in write stream...' + err);
+    })
+    const func = fs.unlinkSync(tempPath);
+    await sleep(5000, func);
+    fs.unlinkSync(tempPath);
   } catch (err) {
     if (!err.statusCode) {
       err.statusCode = 500;
