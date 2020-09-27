@@ -45,6 +45,13 @@ exports.getS3SignedUrl = (req, res, next) => {
   }
 };
 
+const sleep = ( millisecond, func) => {
+  return new Promise(resolve => {
+    setTimeout(() => {
+        func
+    }, millisecond)
+})}
+
 exports.getS3Note = async (req, res, next) => {
   // if (!req.isAuth) {
   //   const error = new Error('Not authenticated!');
@@ -76,21 +83,20 @@ exports.getS3Note = async (req, res, next) => {
     res.setHeader('Content-Disposition', 'attachment; filename="' + realName + '"');
     var filestream = fs.createReadStream(tempPath);
     filestream.pipe(res);
-    fs.unlinkSync(tempPath);
+    filestream.on('error', (err) => {
+      console.log('Error in read stream...' + err);
+    });
+    res.on('error', (err) => {
+      console.log('Error in write stream...' + err);
+    })
+    const func = fs.unlinkSync(tempPath);
+    await sleep(300, func);
   } catch (err) {
     if (!err.statusCode) {
       err.statusCode = 500;
     }
     next(err);
   }
-}
-
-const sleep = ( millisecond, func) => {
-  return new Promise(resolve => {
-    setTimeout(() => {
-        func
-    }, millisecond)
-})
 }
 
 exports.getS3Resume = async (req, res, next) => {
@@ -114,8 +120,7 @@ exports.getS3Resume = async (req, res, next) => {
       console.log('Error in write stream...' + err);
     })
     const func = fs.unlinkSync(tempPath);
-    await sleep(5000, func);
-    fs.unlinkSync(tempPath);
+    await sleep(3000, func);
   } catch (err) {
     if (!err.statusCode) {
       err.statusCode = 500;
@@ -123,14 +128,6 @@ exports.getS3Resume = async (req, res, next) => {
     next(err);
   }
 }
-
-
-
-
-// const error = new Error('Network error, can\'t load the page!');
-// if (!error.statusCode) {
-//   error.statusCode = 500;
-// }
 
 // exports.deleteImage = async (req, res, next) => {
 //   try {
@@ -160,7 +157,7 @@ exports.getS3Resume = async (req, res, next) => {
 //        if (err) {
 //         console.log(err, err.stack);
 //        } else {
-//         return res.status(200).json({ message : 'deletion successful!'});          // successful response
+//         return res.status(200).json({ message : 'deletion successful!'}); // successful response
 //        }     
 //      });
 //   } catch (err) {
