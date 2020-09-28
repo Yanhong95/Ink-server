@@ -59,7 +59,7 @@ exports.getS3Note = async (req, res, next) => {
   //   throw error;
   // }
   try {
-    console.log(req.body.noteId);
+    // console.log('S3controller noteId' + req.body.noteId);
     const note = await Note.findById(req.body.noteId);
     if (!note) {
       const error = new Error('No post found!');
@@ -68,7 +68,6 @@ exports.getS3Note = async (req, res, next) => {
     }
     const URL = note.url;
     const Name = note.name;
-    console.log(note.url.split("mypersonalblogstore/")[1]);
     const params = {
       Bucket: "mypersonalblogstore",
       Key: note.url.split("mypersonalblogstore/")[1]

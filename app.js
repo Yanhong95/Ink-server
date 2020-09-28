@@ -43,6 +43,8 @@ app.use((error, req, res, next) => {
   })
 });
 
+console.log(process.env);
+
 mongoose.connect(
   `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@nodejsplayground-kxxqg.mongodb.net/${process.env.DB_DATABASE}?retryWrites=true&w=majority`,
   { useNewUrlParser: true, useUnifiedTopology: true })

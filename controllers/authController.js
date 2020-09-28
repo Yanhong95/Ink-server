@@ -10,7 +10,6 @@ exports.signUp = async (req, res, next) => {
   try {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-      // console.log(errors.errors);
       const error = new Error(`${errors.array()[0].param}:  ${errors.array()[0].msg}`);
       error.message = errors.errors[0].msg;
       error.statusCode = 422;
@@ -34,7 +33,7 @@ exports.signUp = async (req, res, next) => {
     const hashedEmailVerificationCode = jwt.sign(
       { email: email, userId: result._id}, 
       process.env.EMAIL_VERIFICATION_PRIVATE_KEY.replace(/\\n/gm, '\n'));
-    console.log(hashedEmailVerificationCode);
+    console.log('authController hashedEmailVerificationCode '+ hashedEmailVerificationCode);
     user.emailVerificationCode = hashedEmailVerificationCode;
     await user.save();
     const verifyEmailLink = `${process.env.CLIENTSITE_URL}/verityEmail/${hashedEmailVerificationCode}`
@@ -68,7 +67,6 @@ exports.login = async (req, res, next) => {
     const match = await bcrypt.compare(password, user.password);
     if (match) {
       if (!user.emailVerified) {
-        console.log('right here');
         const verifyEmailLink = `${process.env.CLIENTSITE_URL}/verityEmail/${user.emailVerificationCode}`
         sendMail(
           email,
@@ -89,7 +87,7 @@ exports.login = async (req, res, next) => {
           { expiresIn: '1h' }
         );
         const isAdmin = user.role.includes("admin") ? true : false;
-        console.log(isAdmin);
+        console.log( 'authController isAdmin ' +  isAdmin);
         res.status(200).json({ idToken: token, userId: loadedUser._id.toString(), isAdmin, expiresIn: 1 * 60 * 60 });
       }
     } else {
@@ -121,7 +119,6 @@ exports.verityEmail = async (req, res, next) => {
     if (!decodedVerifycationCode) {
       res.status(401).json({ message: "Invalid verifycation code."} );
     }else{
-      // console.log(decodedVerifycationCode);
       const userId = decodedVerifycationCode.userId;
       const email = decodedVerifycationCode.email;
       const user = await User.findById(userId);

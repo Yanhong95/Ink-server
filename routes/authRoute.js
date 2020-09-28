@@ -14,7 +14,6 @@ router.post(
       .isEmail()
       .withMessage('Please enter a valid email.')
       .custom((value, { req }) => {
-        // console.log('AuthRoute', value);
         const email = value.trim().toLowerCase();
         return User.findOne({ email }).then(userDoc => {
           if (userDoc) {

@@ -11,7 +11,7 @@ exports.sendMail = (to, from, subject, html) => {
     html: html,
   }
 
-  console.log(msg);
+  console.log('sendMarl: ', msg);
   sgMail.send(msg);
 };
 

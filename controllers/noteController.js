@@ -130,7 +130,6 @@ exports.addNote = async (req, res, next) => {
         theTpoic.subcategories.push(subcategory);
         theTpoic.save();
       } else {
-        // console.log(theSubcategory.notes);
         const noteNames = theSubcategory.notes.reduce((acc, cur) => acc.concat(cur.name.toLowerCase()), []);
         if (noteNames.includes(note.name.toLowerCase())) {
           const error = new Error('A note with the same name already exsited in the catagory, please choose new one.');
