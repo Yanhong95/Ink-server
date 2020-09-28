@@ -69,8 +69,8 @@ exports.getS3Note = async (req, res, next) => {
     const URL = note.url;
     const Name = note.name;
     const params = {
-      Bucket: "mypersonalblogstore",
-      Key: note.url.split("mypersonalblogstore/")[1]
+      Bucket: "myink",
+      Key: note.url.split("myink/")[1]
       // notes/algorithm/Array/5f6961668bfd50a1780a66eb-18. 4Sum.md
     };
     data = await s3.getObject(params).promise();
@@ -101,7 +101,7 @@ exports.getS3Note = async (req, res, next) => {
 exports.getS3Resume = async (req, res, next) => {
   try {
     const params = {
-      Bucket: "mypersonalblogstore",
+      Bucket: "myink",
       Key: 'users/main/Resume_Full_Stack.pdf'
     };
     data = await s3.getObject(params).promise();
