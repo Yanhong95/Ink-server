@@ -28,6 +28,7 @@ app.use((req, res, next) => {
   next();
 });
 
+app.get('/', (req,res)=> res.send('Hi there!'));
 app.use('/auth', authRoute);
 app.use('/note', noteRoute);
 app.use('/s3', S3Route)
@@ -49,6 +50,6 @@ mongoose.connect(
   `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@nodejsplayground-kxxqg.mongodb.net/${process.env.DB_DATABASE}?retryWrites=true&w=majority`,
   { useNewUrlParser: true, useUnifiedTopology: true })
   .then(
-    //console.log(process.env),
+    console.log(process.env + "Hi there!"),
     app.listen(process.env.PORT || 8080)
   ).catch(err => console.log(err));
