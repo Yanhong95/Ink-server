@@ -1,11 +1,16 @@
+
 const express = require('express');
+const path = require('path');
+const fs = require('fs');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 const authRoute = require('./routes/authRoute');
 const noteRoute = require('./routes/noteRoute');
 const S3Route = require('./routes/S3Route');
+const helmet = require('helmet');
+const compression = require('compression');
+const morgan = require('morgan')
 const app = express();
-
 const result = require('dotenv').config()
  
 if (result.error) {
@@ -28,10 +33,16 @@ app.use((req, res, next) => {
   next();
 });
 
+
+const accessLogStream = fs.createWriteStream(path.join(__dirname, 'access.log'), {flags: 'a'});
+
 app.get('/', (req,res)=> res.send('Hi there!'));
 app.use('/auth', authRoute);
 app.use('/note', noteRoute);
 app.use('/s3', S3Route)
+app.use(helmet());
+app.use(compression());
+app.use(morgan('combined', {stream: accessLogStream}));
 
 app.use((error, req, res, next) => {
   console.log(error);
@@ -44,12 +55,12 @@ app.use((error, req, res, next) => {
   })
 });
 
-console.log(process.env);
+// console.log(process.env);
 
 mongoose.connect(
   `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@nodejsplayground-kxxqg.mongodb.net/${process.env.DB_DATABASE}?retryWrites=true&w=majority`,
   { useNewUrlParser: true, useUnifiedTopology: true })
   .then(
-    console.log(process.env + "Hi there!"),
+    console.log("Ink server started!"),
     app.listen(process.env.PORT || 8080)
   ).catch(err => console.log(err));

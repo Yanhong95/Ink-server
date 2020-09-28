@@ -1,10 +1,12 @@
 {
-  "name": "serversite_of_personalblog",
+  "name": "serversite_of_ink",
   "version": "1.0.0",
   "description": "Built blog to record learning",
-  "main": "index.js",
+  "main": "app.js",
+  "engines": { "node" : "10.16.0" },
   "scripts": {
-    "start": "nodemon app.js"
+    "start": "node app.js",
+    "start-dev": "nodemon app.js"
   },
   "keywords": [
     "Nodejs",
@@ -16,15 +18,18 @@
   "license": "MIT",
   "dependencies": {
     "@sendgrid/mail": "^7.2.5",
+    "aws-sdk": "^2.716.0",
     "bcryptjs": "^2.4.3",
     "body-parser": "^1.19.0",
+    "compression": "^1.7.4",
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
     "express-validator": "^6.6.1",
+    "helmet": "^4.1.1",
     "jsonwebtoken": "^8.5.1",
-    "mongoose": "^5.10.5",
     "mime-types": "^2.1.27",
-    "aws-sdk": "^2.716.0"
+    "mongoose": "^5.10.5",
+    "morgan": "^1.10.0"
   },
   "devDependencies": {
     "nodemon": "^2.0.4"
