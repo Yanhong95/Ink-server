@@ -11,7 +11,7 @@ const helmet = require('helmet');
 const compression = require('compression');
 const morgan = require('morgan')
 const app = express();
-const result = require('dotenv').config()
+const result = require('dotenv').config({silent: true})
  
 if (result.error) {
   throw result.error

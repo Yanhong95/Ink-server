@@ -1,4 +1,4 @@
-require('dotenv').config()
+const result = require('dotenv').config({silent: true})
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const { sendMail } = require('../utility/sendMail');

@@ -5,7 +5,7 @@ const mime = require('mime-types');
 const Note = require('../models/note');
 const contentDisposition = require('content-disposition');
 
-const result = require('dotenv').config()
+const result = require('dotenv').config({silent: true})
 
 if (result.error) {
   throw result.error
