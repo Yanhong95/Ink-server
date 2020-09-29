@@ -1,5 +1,7 @@
 const result = require('dotenv').config({silent: true})
 const jwt = require('jsonwebtoken');
+const { dotenvError } = require('../utility/dotenvError');
+dotenvError(result);
 
 module.exports = async (req, res, next) => {
   let token; 

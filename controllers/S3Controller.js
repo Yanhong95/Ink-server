@@ -4,12 +4,9 @@ const fs = require('fs');
 const mime = require('mime-types');
 const Note = require('../models/note');
 const contentDisposition = require('content-disposition');
-
 const result = require('dotenv').config({silent: true})
-
-if (result.error) {
-  throw result.error
-}
+const { dotenvError } = require('../utility/dotenvError');
+dotenvError(result);
 
 var s3 = new AWS.S3({
   accessKeyId: process.env.AWS_ACCESS_KEY_ID,

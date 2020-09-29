@@ -4,7 +4,8 @@ const jwt = require('jsonwebtoken');
 const { sendMail } = require('../utility/sendMail');
 const { validationResult } = require('express-validator');
 const User = require('../models/user');
-
+const { dotenvError } = require('../utility/dotenvError');
+dotenvError(result);
 
 exports.signUp = async (req, res, next) => {
   try {

@@ -12,10 +12,9 @@ const compression = require('compression');
 const morgan = require('morgan')
 const app = express();
 const result = require('dotenv').config({silent: true})
- 
-if (result.error) {
-  throw result.error
-}
+const { dotenvError } = require('./utility/dotenvError');
+dotenvError(result);
+
 
 // parse application/x-www-form-urlencoded <from></from> 针对form传输
 app.use(bodyParser.urlencoded({ extended: true }))
