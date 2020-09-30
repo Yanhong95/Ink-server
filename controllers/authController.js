@@ -34,10 +34,11 @@ exports.signUp = async (req, res, next) => {
     const hashedEmailVerificationCode = jwt.sign(
       { email: email, userId: result._id}, 
       process.env.EMAIL_VERIFICATION_PRIVATE_KEY.replace(/\\n/gm, '\n'));
-    console.log('authController hashedEmailVerificationCode '+ hashedEmailVerificationCode);
+    // console.log('authController hashedEmailVerificationCode '+ hashedEmailVerificationCode);
     user.emailVerificationCode = hashedEmailVerificationCode;
     await user.save();
-    const verifyEmailLink = `${process.env.CLIENTSITE_URL}/verityEmail/${hashedEmailVerificationCode}`
+    const verifyEmailLink = `${(process.env.NODE_ENV || '').trim() === "production" ? 
+      process.env.CLIENTSITE_URL_PRODUCTION :  process.env.CLIENTSITE_URL_DEVELOPMENT}/verityEmail/${hashedEmailVerificationCode}`
     sendMail(
        email,
       'yanhongmain@gmail.com',
@@ -68,12 +69,13 @@ exports.login = async (req, res, next) => {
     const match = await bcrypt.compare(password, user.password);
     if (match) {
       if (!user.emailVerified) {
-        const verifyEmailLink = `${process.env.CLIENTSITE_URL}/verityEmail/${user.emailVerificationCode}`
+        const verifyEmailLink = `${(process.env.NODE_ENV || '').trim() === "production" ? 
+        process.env.CLIENTSITE_URL_PRODUCTION :  process.env.CLIENTSITE_URL_DEVELOPMENT}/verityEmail/${user.emailVerificationCode}`
         sendMail(
           email,
          'yanhongmain@gmail.com',
          'Activate your email for INK!',
-         `<h5>Hello ${User.firstName}, thanks for sign up on my website, please click <a href=${verifyEmailLink}>here</a> to verify your email, have a nice day :) </h5>`
+         `<h5>Hello ${user.firstName}, thanks for sign up on my website, please click <a href=${verifyEmailLink}>here</a> to verify your email, have a nice day :) </h5>`
         );
         const error = new Error('Your email address is not verified, we just sent a link to your email, please click on the link to verify.');
         error.statusCode = 401;
@@ -88,7 +90,7 @@ exports.login = async (req, res, next) => {
           { expiresIn: '1h' }
         );
         const isAdmin = user.role.includes("admin") ? true : false;
-        console.log( 'authController isAdmin ' +  isAdmin);
+        // console.log( 'authController isAdmin ' +  isAdmin);
         res.status(200).json({ idToken: token, userId: loadedUser._id.toString(), isAdmin, expiresIn: 1 * 60 * 60 });
       }
     } else {
