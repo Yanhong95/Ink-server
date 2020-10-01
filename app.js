@@ -15,7 +15,6 @@ const result = require('dotenv').config({silent: true})
 const { dotenvError } = require('./utility/dotenvError');
 dotenvError(result);
 
-
 // parse application/x-www-form-urlencoded <from></from> 针对form传输
 app.use(bodyParser.urlencoded({ extended: true }))
 
