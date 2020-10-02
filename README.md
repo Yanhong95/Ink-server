@@ -1,6 +1,6 @@
 ### **Ink server side**
 
-The purpose of developing the website is to enjoy the fun of dynamic design, to polish and improve my React and Nodejs Skills as well.  
+The purpose of developing the website is to enjoy the fun of dynamic design, to polish and improve my React and NodeJS Skills as well.  
 
 In addition, for me to have a place to post my daily notes about the algorithm problems I solved, some technical notes, and experience, etc.
 

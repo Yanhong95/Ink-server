@@ -6,6 +6,7 @@ const { validationResult } = require('express-validator');
 const User = require('../models/user');
 const { dotenvError } = require('../utility/dotenvError');
 dotenvError(result);
+const currEnv = process.env.NODE_ENV;
 
 exports.signUp = async (req, res, next) => {
   try {
@@ -37,8 +38,10 @@ exports.signUp = async (req, res, next) => {
     // console.log('authController hashedEmailVerificationCode '+ hashedEmailVerificationCode);
     user.emailVerificationCode = hashedEmailVerificationCode;
     await user.save();
-    const verifyEmailLink = `${(process.env.NODE_ENV || '').trim() === "production" ? 
-      process.env.CLIENTSITE_URL_PRODUCTION :  process.env.CLIENTSITE_URL_DEVELOPMENT}/verityEmail/${hashedEmailVerificationCode}`
+    const verifyEmailLink = `${(currEnv || '').trim() === "PRODUCTION" ? 
+      process.env.CLIENTSITE_URL_PRODUCTION :  process.env.CLIENTSITE_URL_DEVELOPMENT}/verityEmail/${hashedEmailVerificationCode}`;
+    // console.log('send mail env ' + (currEnv || '').trim()) + " " + (currEnv || '').trim() === "production" +" " + process.env.CLIENTSITE_URL_PRODUCTION ; 
+    // console.log(process.env.NODE_ENV + process.env.CLIENTSITE_URL_PRODUCTION );
     sendMail(
        email,
       'yanhongmain@gmail.com',
@@ -69,8 +72,9 @@ exports.login = async (req, res, next) => {
     const match = await bcrypt.compare(password, user.password);
     if (match) {
       if (!user.emailVerified) {
-        const verifyEmailLink = `${(process.env.NODE_ENV || '').trim() === "production" ? 
+        const verifyEmailLink = `${(currEnv || '').trim() === "PRODUCTION" ? 
         process.env.CLIENTSITE_URL_PRODUCTION :  process.env.CLIENTSITE_URL_DEVELOPMENT}/verityEmail/${user.emailVerificationCode}`
+        // console.log('send mail env ' + (currEnv || '').trim()) + " " + (currEnv || '').trim() === "production" +" " + process.env.CLIENTSITE_URL_PRODUCTION ; 
         sendMail(
           email,
          'yanhongmain@gmail.com',
