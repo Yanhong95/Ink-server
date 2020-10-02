@@ -14,14 +14,10 @@ In addition, for me to have a place to post my daily notes about the algorithm p
 -  🍑 &ensp;Leveraged FortAwesome icons to beautify and guide users on the main Navbar.
 -  ❤️ &ensp;Thanks to the team of 'ReactMarkdown' and 'react-syntax-highlighter' for providing such excellent plugins so that I can beautify my markdown files
 
-### Remaining problem
-
-Reactivate the SendGrid 
-
 
 ### To be continued: 
 
-### Phase two: 
+### Phase one: 
 
 - 👌&ensp;Styling of the note page.
 - 👌&ensp;Add info page to blank note when user first loading.

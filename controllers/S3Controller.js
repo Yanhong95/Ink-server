@@ -24,7 +24,7 @@ exports.getS3SignedUrl = (req, res, next) => {
 
     const params = {
       Bucket: req.query.uploadS3Bucket,
-      Key: `${req.query.uploadPath}/${req.userId}-${req.query.filename}`,
+      Key: `${req.query.uploadPath.replace(/\s+/g, '%')}/${req.userId}-${req.query.filename}`,
       ContentType: req.query.type
     };
     s3.getSignedUrl('putObject', params, (err, url) => {
@@ -56,7 +56,6 @@ exports.getS3Note = async (req, res, next) => {
   //   throw error;
   // }
   try {
-    // console.log('S3controller noteId' + req.body.noteId);
     const note = await Note.findById(req.body.noteId);
     if (!note) {
       const error = new Error('No post found!');
@@ -67,15 +66,15 @@ exports.getS3Note = async (req, res, next) => {
     const Name = note.name;
     const params = {
       Bucket: "myink",
-      Key: note.url.split("myink/")[1]
-      // notes/algorithm/Array/5f6961668bfd50a1780a66eb-18. 4Sum.md
+      Key: note.url.split("myink/")[1].replace(/\s+/g, '%')
+      // notes/algorithm/Array/5f6961668bfd50a1780a66eb-18.%4Sum.md
     };
     data = await s3.getObject(params).promise();
-    let tempPath = path.join(__dirname, '../download', note.name.replace(/\s+/g, '_').toLowerCase());
+    let tempPath = path.join(__dirname, '../download', note.name.replace(/\s+/g, '%').toLowerCase());
     fs.writeFileSync(tempPath, data.Body);
     res.setHeader('Content-Length', data.ContentLength);
     res.setHeader('Content-Type', mime.contentType(note.name));
-    const realName = encodeURI(note.name.replace(/\s+/g, '_').toLowerCase(), "GBK").toString('iso8859-1');
+    const realName = encodeURI(note.name.replace(/\s+/g, '%').toLowerCase(), "GBK").toString('iso8859-1');
     res.setHeader('Content-Disposition', 'attachment; filename="' + realName + '"');
     var filestream = fs.createReadStream(tempPath);
     filestream.pipe(res);

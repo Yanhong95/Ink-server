@@ -116,7 +116,7 @@ exports.verityEmail = async (req, res, next) => {
       decodedVerifycationCode = jwt.verify(hashedEmailVerificationCode, process.env.EMAIL_VERIFICATION_PRIVATE_KEY.replace(/\\n/gm, '\n'));
     } catch (err) {
       const error = new Error('Invalid verifycation code.');
-      error.statusCode = 500;
+      error.statusCode = 401;
       throw error;
     }
     if (!decodedVerifycationCode) {
