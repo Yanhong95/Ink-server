@@ -11,9 +11,8 @@ const subcategorySchema = new Schema({
       type: Schema.Types.ObjectId,
       ref: 'note'
     }
-  ]
+  ],
 });
 
 module.exports = mongoose.model('Subcategory', subcategorySchema);
-
 
