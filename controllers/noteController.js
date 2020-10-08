@@ -125,9 +125,12 @@ exports.addNote = async (req, res, next) => {
       topic.subcategories.push(subcategory);
       await topic.save();
     } else {
-      const theSubcategory = await Subcategory.findOne({ name: new RegExp('^' + newSubcategory + '$', "i") })
+      const categories = await Subcategory.find({ name: new RegExp('^' + newSubcategory + '$', "i") })
         .populate({ path: 'notes', model: 'Note', select: 'name' });
-      if (!theSubcategory) {
+
+      const subcategoriesList = theTpoic.subcategories;
+      const filteredCategories = categories.filter(({ _id}) => subcategoriesList.includes(_id));
+      if (filteredCategories.length === 0) {
         const subcategory = new Subcategory();
         subcategory.name = newSubcategory.charAt(0).toUpperCase() + newSubcategory.slice(1);;
         subcategory.notes.push(note);
@@ -135,6 +138,7 @@ exports.addNote = async (req, res, next) => {
         theTpoic.subcategories.push(subcategory);
         theTpoic.save();
       } else {
+        const theSubcategory = filteredCategories[0]
         const noteNames = theSubcategory.notes.reduce((acc, cur) => acc.concat(cur.name.toLowerCase()), []);
         if (noteNames.includes(note.name.toLowerCase())) {
           const error = new Error('A note with the same name already exsited in the catagory, please choose new one.');
@@ -147,7 +151,7 @@ exports.addNote = async (req, res, next) => {
       }
     }
     res.status(201).json({ message: `Note ${newNoteName} has been created!` });
-    return
+    return;
   } catch (err) {
     if (!err.statusCode) {
       err.statusCode = 500;

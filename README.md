@@ -24,6 +24,8 @@ In addition, for me to have a place to post my daily notes about the algorithm p
 - 👌&ensp;Notes uploading and downloading via S3.
 - 👌&ensp;Morgan for HTTP request logger. Dotenv for extract sensitive data into .env file.
 - 👌&ensp;Return notes in alphabetical order.
+- Error of rendering React language in .md file
+- 👌&ensp;Bug of uploading notes to wrong category.
 
 ### Phase two: 
 
