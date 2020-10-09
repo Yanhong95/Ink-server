@@ -3,6 +3,7 @@ const path = require('path');
 const fs = require('fs');
 const mime = require('mime-types');
 const Note = require('../models/note');
+const SubCategory = require('../models/subcategory');
 const contentDisposition = require('content-disposition');
 const result = require('dotenv').config({silent: true})
 const { dotenvError } = require('../utility/dotenvError');
@@ -21,7 +22,6 @@ exports.getS3SignedUrl = (req, res, next) => {
       error.code = 401;
       throw error;
     }
-
     const params = {
       Bucket: req.query.uploadS3Bucket,
       Key: `${req.query.uploadPath.replace(/\s+/g, '%')}/${req.userId}-${req.query.filename}`,
@@ -124,41 +124,46 @@ exports.getS3Resume = async (req, res, next) => {
   }
 }
 
-// exports.deleteImage = async (req, res, next) => {
-//   try {
-//     if (!req.isAuth) {
-//       const error = new Error('Not authenticated!');
-//       error.code = 401;
-//       throw error;
-//     }
-//     const post = await Post.findById(req.params.objectId);
-//     if (!post) {
-//       const error = new Error('No post found!');
-//       error.code = 404;
-//       throw error;
-//     }
-//     if (post.creator.toString() !== req.userId.toString()) {
-//       const error = new Error('Not authorized!');
-//       error.code = 403;
-//       throw error;
-//     }
-//     const imageUrl = post.imageUrl;
-//     const imageName = imageUrl.split("/").pop();
-//     const params = {
-//       Bucket: "restpostproject", 
-//       Key: `postImage/${imageName}`
-//      };
-//     s3.deleteObject(params, (err, data) => {
-//        if (err) {
-//         console.log(err, err.stack);
-//        } else {
-//         return res.status(200).json({ message : 'deletion successful!'}); // successful response
-//        }     
-//      });
-//   } catch (err) {
-//     if (!err.statusCode) {
-//       err.statusCode = 500;
-//     }
-//     next(err);
-//   }
-// }
+exports.deleteNote = async (req, res, next) => {
+  try {
+    if (!req.isAuth) {
+      const error = new Error('Not authenticated!');
+      error.code = 401;
+      throw error;
+    }
+    console.log(req.body, req.query);
+    const categoryId = req.query.categoryId;
+    const noteId = req.query.noteId;
+    const subCategory = await SubCategory.findById(categoryId);
+    if (!subCategory) {
+      const error = new Error('No subCategory found!');
+      error.code = 404;
+      throw error;
+    }
+    const newNoteList = subCategory.notes.filter( note_id => note_id != noteId);
+    console.log(subCategory.notes);
+    console.log(newNoteList);
+    subCategory.notes = newNoteList;
+    await subCategory.save();
+    const note = await Note.findOne({_id: noteId});
+    await Note.findByIdAndDelete({ _id: noteId}, function(err, note) { note.remove()})
+    const noteUrl = note.url;
+    const noteKey = noteUrl.split("myink/").pop();
+    const params = {
+      Bucket: "myink", 
+      Key: noteKey
+     };
+    s3.deleteObject(params, (err, data) => {
+       if (err) {
+        console.log(err, err.stack);
+       } else {
+        return res.status(200).json({ message : 'deletion successful!'}); // successful response
+       }     
+     });
+  } catch (err) {
+    if (!err.statusCode) {
+      err.statusCode = 500;
+    }
+    next(err);
+  }
+}

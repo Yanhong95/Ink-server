@@ -20,4 +20,4 @@ const commentSchema = new Schema({
   }
 });
 
-module.exports = mongoose.model('Note', noteSchema);
+module.exports = mongoose.model('Commnet', commentSchema);

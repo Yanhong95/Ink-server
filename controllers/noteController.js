@@ -1,6 +1,7 @@
 const Subcategory = require('../models/subcategory');
 const Note = require('../models/note');
 const Topic = require('../models/topic');
+const Comment = require('../models/comment');
 
 
 exports.saveNote = async (req, res, next) => {
@@ -39,7 +40,18 @@ exports.saveNote = async (req, res, next) => {
     // topic2.name = "javascript";
     // topic2.subcategories.push(subcategory4);
     // await topic2.save();
-
+    // const note = await Note.findById('5f7fdeafcfd19b110c9e2199');
+    // const comment1 = new Comment();
+    // const comment2 = new Comment();
+    // comment1.content = 'test3';
+    // comment2.content = 'test4';
+    // comment1.note = note;
+    // comment2.note = note;
+    // await comment1.save();
+    // await comment2.save();
+    // note.comments.push(comment1);
+    // note.comments.push(comment2);
+    // await note.save();
     res.status(201).json({ message: 'created!' });
   } catch (err) {
     if (!err.statusCode) {
@@ -105,6 +117,11 @@ exports.loadCatalog = async (req, res, next) => {
 
 exports.addNote = async (req, res, next) => {
   try {
+    if (!req.isAuth) {
+      const error = new Error('Not authenticated!');
+      error.code = 401;
+      throw error;
+    }
     const newTopic = req.body.topic;
     const newSubcategory = req.body.subcategory;
     const newFileURL = req.body.fileURL;

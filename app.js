@@ -27,7 +27,7 @@ app.use((req, res, next) => {
   // 哪些method可以被接受
   res.setHeader('Access-Control-Allow-Methods', 'OPTIONS, GET, POST, PUT, PATCH, DELETE');
   // client可以设置哪些header
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, Accept');
   next();
 });
 
