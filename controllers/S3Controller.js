@@ -131,7 +131,7 @@ exports.deleteNote = async (req, res, next) => {
       error.code = 401;
       throw error;
     }
-    console.log(req.body, req.query);
+    // console.log(req.body, req.query);
     const categoryId = req.query.categoryId;
     const noteId = req.query.noteId;
     const subCategory = await SubCategory.findById(categoryId);
@@ -141,8 +141,8 @@ exports.deleteNote = async (req, res, next) => {
       throw error;
     }
     const newNoteList = subCategory.notes.filter( note_id => note_id != noteId);
-    console.log(subCategory.notes);
-    console.log(newNoteList);
+    // console.log(subCategory.notes);
+    // console.log(newNoteList);
     subCategory.notes = newNoteList;
     await subCategory.save();
     const note = await Note.findOne({_id: noteId});
